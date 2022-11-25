@@ -27,7 +27,8 @@ const opts = simpleArgParser()
   {
     name: ['template', 't'],
     help: 'HTML template file',
-    default: 'src/template.html',
+    type: 'string',
+    default: 'src/templates/default.html',
   },
   {
     name: ['output', 'o'],

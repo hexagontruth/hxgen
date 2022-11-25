@@ -1,6 +1,5 @@
 /dist
-/user/*
-!/usr/.gitkeep
+/user
 node_modules
 
 *.log
