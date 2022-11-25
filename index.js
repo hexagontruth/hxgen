@@ -3,6 +3,7 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const HtmlInlineScriptWebpackPlugin = require('html-inline-script-webpack-plugin');
 const WebpackDevServer = require('webpack-dev-server');
+const ZipPlugin = require('zip-webpack-plugin');
 const webpack = require('webpack');
 const simpleArgParser = require('simple-arg-parser');
 
@@ -24,20 +25,20 @@ const opts = simpleArgParser()
     help: 'Launch dev server',
   },
   {
-    name: ['zip', 'z'],
-    help: 'Zip output',
-  },
-  {
     name: ['template', 't'],
     help: 'HTML template file',
     default: 'src/template.html',
   },
   {
     name: ['output', 'o'],
-    help: 'Output file name',
-    default: 'index.html',
+    help: 'Output file name (zip or html)',
     type: 'string',
     default: 'index.html',
+  },
+  {
+    name: ['title'],
+    help: 'Set custom page title',
+    type: 'string',
   },
   {
     name: 'filename',
@@ -46,6 +47,8 @@ const opts = simpleArgParser()
     help: 'Entrypoint filename',
   },
 ]);
+
+const isZip = path.extname(opts.output) == '.zip';
 
 // Webpack
 
@@ -60,10 +63,23 @@ const webpackConfig = {
     // watchFiles: [`./${opts.filename}`],
     port: port,
   },
+  module: {
+    rules: [
+      {
+        test: /\.(frag|vert|fs|vs)$/,
+        loader: 'simple-webgl-loader',
+      },
+      {
+        test: /\.(sass|scss|css)$/,
+        use: ['style-loader', 'css-loader', 'sass-loader'],
+      },
+    ],
+  },
   plugins: [
     new HtmlWebpackPlugin({
-      title: opts.filename,
-      filename: `${opts.output}`,
+      title: opts.title || opts.filename,
+      filename: isZip ? 'index.html' : `${opts.output}`,
+      inject: 'body',
       template: path.join(__dirname, opts.template),
     }),
   ],
@@ -72,6 +88,14 @@ const webpackConfig = {
 // Build
 
 if (require.main == module) {
+  main();
+}
+
+// Functions
+
+module.exports = { main };
+
+function main() {
   if (opts.dev) {
     const compiler = webpack(webpackConfig);
     const server = new WebpackDevServer(webpackConfig.devServer, compiler);
@@ -80,6 +104,11 @@ if (require.main == module) {
   }
   else {
     webpackConfig.plugins.push(new HtmlInlineScriptWebpackPlugin());
+    if (isZip) {
+      webpackConfig.plugins.push(new ZipPlugin({
+        filename: opts.output,
+      }));
+    }
     webpack(webpackConfig, (err, stats) => {
       if (err) {
         console.error(err);

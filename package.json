@@ -2,7 +2,6 @@
   "name": "hxgen",
   "version": "0.0.1",
   "description": "Generative art emitter",
-  "main": "index.js",
   "repository": "git@github.com:hexagontruth/hxgen.git",
   "scripts": {
     "start": "node index",
@@ -11,13 +10,17 @@
   "author": "graham",
   "license": "ISC",
   "dependencies": {
+    "css-loader": "^6.7.2",
     "dotenv": "^16.0.3",
     "html-inline-script-webpack-plugin": "^3.1.0",
     "html-webpack-plugin": "^5.5.0",
-    "jszip": "^3.10.1",
+    "sass": "^1.56.1",
+    "sass-loader": "^13.2.0",
     "simple-arg-parser": "^0.0.1",
     "simple-webgl-loader": "^0.2.1",
+    "style-loader": "^3.3.1",
     "webpack": "^5.75.0",
-    "webpack-dev-server": "^4.11.1"
+    "webpack-dev-server": "^4.11.1",
+    "zip-webpack-plugin": "^4.0.1"
   }
 }
